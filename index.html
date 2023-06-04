@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">  
+    <title>Document</title>
+    <link rel="stylesheet" href="css/reset.css">    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <style></style>
+</head>
+<body>
+  <div class="wrap">
+      <div class="con-box">
+        <h1>To Do List</h1>
+        <form action="submit" id="myTodo">
+          <input type="text" id="myTodo">
+        </form>
+        <ul class="list">
+<!--           <li>
+            <span>&vee;</span>
+            <p>운동하기</p>
+            <button class="del">명단 삭제</button>
+          </li>
+          <li class="check-box">
+            <span>&vee;</span>
+            <p>운동하기</p>
+          </li> -->
+        </ul>
+      </div>
+</div>
+
+  <script type="module">
+    const toDo = document.querySelector('input[type="text"]');
+    const form = document.querySelector('form');
+    const list = document.querySelector('.list');
+
+    let obj = [], no = 1;
+    // let len = obj.length;
+    // no = obj[len-1].id + 1;
+    localStorage.clear();
+    obj = JSON.parse(localStorage.getItem("obj")) || [];
+
+    let add = () => {
+      obj = [
+        ...obj,
+        {
+          id: no++,
+          todo: toDo.value,
+          checked: false
+        }
+      ];
+      localStorage.setItem("obj", JSON.stringify(obj));
+    };
+    // 로컬스토리지에 저장될 obj
+
+    const delShow = (del, id) => {
+      del.addEventListener('click', e => {
+        obj = obj.filter(item => item.id !== id);
+        localStorage.setItem("obj", JSON.stringify(obj));
+        show();
+      });
+    };
+    // 삭제 누르면 로컬스토리지에서 삭제
+
+    const show = () => {
+      toDo.value = ''; // input text 초기화
+      list.innerHTML = ''; // li 초기화
+      obj.forEach( item => {
+        const {id, todo, checked} = item;
+        let li = document.createElement('li');
+        let check = document.createElement('span');
+        check.innerHTML = '&vee;';
+        let p = document.createElement('p');
+        p.textContent = todo;
+        let del = document.createElement('button');
+        del.textContent = '삭제';
+        li.append(check);
+        li.append(p);
+        li.append(del);
+        list.append(li);
+        if (checked) {
+          li.classList.add('check-box');
+        }
+        check.addEventListener('click', e => {
+          check.parentElement.classList.toggle('check-box');
+          item.checked = !item.checked;
+        });
+        delShow(del, id); // 삭제 함수
+      });
+    };
+    show();
+
+    form.addEventListener('submit', e => { // 엔터 누르면
+      e.preventDefault();
+      add();
+      show();
+  });
+  </script>
+</body>
+</html>
